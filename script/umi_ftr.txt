@@ -23262,6 +23262,9 @@ gosub *pam_audio
 mov $anim_sprite,"video"
 if %legacy_op = 1 && $anim_file = "op" mov $anim_sprite,"legacy"
 if $anim_file = "op_new" mov $anim_file,"op"
+if %legacy_op = 1 && $anim_file = "op" && $ep_id = scenario_episode_1 mov $anim_file,"op_ep123"
+if %legacy_op = 1 && $anim_file = "op" && $ep_id = scenario_episode_2 mov $anim_file,"op_ep123"
+if %legacy_op = 1 && $anim_file = "op" && $ep_id = scenario_episode_3 mov $anim_file,"op_ep123"
 if %video_res = 1 mov $anim_file,$anim_sprite+"\720p\"+$anim_file+".mp4"
 if %video_res = 0 mov $anim_file,$anim_sprite+"\1080p\"+$anim_file+".mp4"
 
@@ -23298,7 +23301,7 @@ if $anim_file != "op_new" jumpf
 	goto *pam_sfx_ok
 ~
 
-if $anim_file != "op" jumpf
+if $anim_file != "op" && $anim_file != "op_ep123"  jumpf
 	if %legacy_op == off dwaveload 9,"sound\bgm\op.ogg" 
 	if %legacy_op == on  dwaveload 9,"legacy\bgm\op.ogg" 
 	mov %track_id,1012 : goto *pam_audio_ok

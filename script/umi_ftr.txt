@@ -30779,6 +30779,7 @@ align_buttons_r 315
 
 tree_clear 2
 mov %Free3,-1
+mov $Free11,"" : mov $Free12,"" : mov %Free13,-1
 
 ;Unlock in MusicBox
 for %BGM_Id = 1 to 110
@@ -30788,6 +30789,16 @@ next
 mov %BGM_Id, 1000 : gosub *bgm_gen_box
 mov %BGM_Id, 1010 : gosub *bgm_gen_box
 mov %BGM_Id, 1011 : gosub *bgm_gen_box
+
+if %legacy_op != on jumpf
+    mov $Free11, "op_ep123"
+	mov $Free12, "(Ep1-3)"
+	mov %BGM_Id, 1012 : gosub *bgm_gen_box
+	
+	mov $Free12, "(Ep4)"
+	mov %Free13, ?bgm_list[%BGM_Id]
+	if %UMINEKOEND <= 40 && $flag_scenario_4_op != "●" mov %Free13, 0
+~
 mov %BGM_Id, 1012 : gosub *bgm_gen_box
 
 if %CHIRU_MODE != 1 jumpf
@@ -30854,10 +30865,14 @@ goto *bgm_end
 
 *bgm_gen_box
 	gosub *BGM_List
+	if $Free12 != "" add $BGM_Title, " " : add $BGM_Title, $Free12
 	tree_seta %Free1,2,"auto","text","{p:6:{a:c:{fit:"+$BGM_Title+"}}}"
 	tree_set 2,%Free1,"bgm",$BGM_Play
-	if ?bgm_list[%BGM_Id] == 1 tree_set 2,%Free1,"bg","318"
-	if ?bgm_list[%BGM_Id] == 0 tree_set 2,%Free1,"text","{p:6:{a:c:????}}" : tree_set 2,%Free1,"bgm",""
+	tree_set 2,%Free1,"video_override",$Free11
+	if %Free13 == -1 mov %Free13, ?bgm_list[%BGM_Id]
+	if %Free13 == 1 tree_set 2,%Free1,"bg","318"
+	if %Free13 == 0 tree_set 2,%Free1,"text","{p:6:{a:c:????}}" : tree_set 2,%Free1,"bgm",""
+	mov $Free11,"" : mov $Free12,"" : mov %Free13,-1
 return
 
 
@@ -30865,6 +30880,7 @@ return
 
 *bgm_play_file
 	scrollable_get_hovered_elem %Free2,320
+	tree_get $Free11,2,%Free2,"video_override"
 	tree_get $Free2,2,%Free2,"bgm"
 	; Exit if disabled
 	if $Free2 == "" return
@@ -30887,10 +30903,12 @@ return
 	scrollable_cfg mousectrl,320,0
 	stop
 	loopbgmstop
+	if $Free11 != "" pam 100,$Free11,1 : jumpf
 	if $Free2 == "sound\bgm\op.ogg" || $Free2 == "legacy\bgm\op.ogg" pam 100,"op",1
 	if $Free2 == "sound\bgm\tiruop.ogg" pam 100,"op4",1
 	if $Free2 == "sound\bgm\ep5_op.ogg" pam 100,"op56",1
 	if $Free2 == "sound\bgm\ep7_op.ogg" pam 100,"op78",1
+	~
 	if %anim_mode == on flush 23 ;trapped
 	if %anim_mode == off flush 1
 	scrollable_cfg mousectrl,320,1

@@ -14735,7 +14735,11 @@ goto *boot_logo_skip_100
 	if %title_skip > 0 mov %Free1,off
 	if %Free1 != on goto *boot_logo_no_video
 
-	if %CHIRU_MODE == 0 mov $Free1,"op"
+	if %CHIRU_MODE != 0 jumpf
+		mov $Free1,"op_ep123"
+		if %UMINEKOEND > 40 mov $Free1,"op"
+		if $flag_scenario_4_op == "●" mov $Free1,"op"
+	~
 	if %CHIRU_MODE == 1 mov $Free1,"op4"
 
 	pam 100,$Free1,1
